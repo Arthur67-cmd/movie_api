@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
- 
+
 // GET all movies
 router.get('/', async (req, res) => {
   try {
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
- 
+
 // GET movie by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
- 
+
 // POST create a new movie
 router.post('/', async (req, res) => {
   const { name, detail, coverimage, genre, year, rating } = req.body;
@@ -37,14 +37,14 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
- 
+
 // PUT update a movie
 router.put('/:id', async (req, res) => {
   const { name, detail, coverimage, genre, year, rating } = req.body;
   try {
     const [check] = await db.query('SELECT id FROM movies WHERE id = ?', [req.params.id]);
     if (check.length === 0) return res.status(404).json({ error: 'Movie not found' });
- 
+
     await db.query(
       'UPDATE movies SET name = ?, detail = ?, coverimage = ?, genre = ?, year = ?, rating = ? WHERE id = ?',
       [name, detail, coverimage, genre, year, rating, req.params.id]
@@ -54,36 +54,39 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
- 
-// PATCH update rating only (used by Flutter app)
+
+// PATCH update rating only
 router.patch('/:id/rating', async (req, res) => {
-  const { rating } = req.body;
-  if (rating === undefined || rating < 0 || rating > 5) {
-    return res.status(400).json({ error: 'Rating must be between 0 and 5' });
-  }
   try {
-    const [check] = await db.query('SELECT id FROM movies WHERE id = ?', [req.params.id]);
+    const id = req.params.id;
+    const rating = parseFloat(req.body.rating);
+
+    if (isNaN(rating) || rating < 0 || rating > 5) {
+      return res.status(400).json({ error: 'Rating must be a number between 0 and 5' });
+    }
+
+    const [check] = await db.query('SELECT id FROM movies WHERE id = ?', [id]);
     if (check.length === 0) return res.status(404).json({ error: 'Movie not found' });
- 
-    await db.query('UPDATE movies SET rating = ? WHERE id = ?', [rating, req.params.id]);
-    const [updated] = await db.query('SELECT * FROM movies WHERE id = ?', [req.params.id]);
+
+    await db.query('UPDATE movies SET rating = ? WHERE id = ?', [rating, id]);
+    const [updated] = await db.query('SELECT * FROM movies WHERE id = ?', [id]);
     res.json(updated[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
- 
+
 // DELETE a movie
 router.delete('/:id', async (req, res) => {
   try {
     const [check] = await db.query('SELECT id FROM movies WHERE id = ?', [req.params.id]);
     if (check.length === 0) return res.status(404).json({ error: 'Movie not found' });
- 
+    
     await db.query('DELETE FROM movies WHERE id = ?', [req.params.id]);
     res.json({ message: 'Movie deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
- 
+
 module.exports = router;
