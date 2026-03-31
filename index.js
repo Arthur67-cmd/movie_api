@@ -6,21 +6,21 @@ const moviesRouter = require('./routes/movies');
 
 const app = express();
 
-// Allow all origins and all methods including PATCH
-app.use(cors({
+const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+};
 
-// Handle preflight OPTIONS requests
-app.options('*', cors());
+app.use(cors(corsOptions));
+
+// FIX: use regex instead of '*' - newer Express path-to-regexp breaks with '*'
+app.options(/(.*)/, cors(corsOptions));
 
 app.use(express.json());
 
-// Health check
 app.get('/', (req, res) => {
-  res.json({ message: 'Movie API is running 🎬' });
+  res.json({ message: 'Movie API is running' });
 });
 
 app.use('/movies', moviesRouter);
