@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const moviesRouter = require('./routes/movies');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -13,17 +14,15 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// FIX: use regex instead of '*' - newer Express path-to-regexp breaks with '*'
 app.options(/(.*)/, cors(corsOptions));
-
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Movie API is running' });
+  res.json({ message: 'Movie API is running 🎬' });
 });
 
 app.use('/movies', moviesRouter);
+app.use('/auth', authRouter);
 
 const PORT = process.env.PORT || 3333;
 if (process.env.NODE_ENV !== 'production') {
