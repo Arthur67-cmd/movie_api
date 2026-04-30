@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS users (
   username   VARCHAR(100) NOT NULL UNIQUE,
   password   VARCHAR(255) NOT NULL,
   email      VARCHAR(255) NOT NULL UNIQUE,
-  avatar     VARCHAR(500) DEFAULT 'https://www.melivecode.com/users/cat1.png',
+  avatar     VARCHAR(500) DEFAULT 'https://api.dicebear.com/7.x/pixel-art/png?seed=movie',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

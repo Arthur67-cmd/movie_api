@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
     const [result] = await db.query(
       'INSERT INTO users (fname, lname, username, password, email, avatar) VALUES (?, ?, ?, ?, ?, ?)',
       [fname, lname, username, hashedPassword, email,
-       avatar || 'https://static.vecteezy.com/system/resources/thumbnails/027/951/137/small/stylish-spectacles-guy-3d-avatar-character-illustrations-png.png']
+       avatar || 'https://api.dicebear.com/7.x/pixel-art/png?seed=movie']
     );
     const [newUser] = await db.query(
       'SELECT id, fname, lname, username, email, avatar FROM users WHERE id = ?',
